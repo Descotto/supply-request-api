@@ -5,7 +5,7 @@ const cors = require('cors');
 const mongoose = require('mongoose');
 const Request = require('./schemas/request');
 // port
-const port = 8000;
+const port = process.env.PORT || 8000;
 //
 const mongoDB = 'mongodb://127.0.0.1/Request'
 mongoose.connect(mongoDB, {useNewUrlParser: true});
@@ -31,6 +31,15 @@ app.get('/', (req, res) => {
     res.json({ message: 'My Database'});
 });
 
+app.get('/order/:id', (req, res) => {
+    console.log(req.params.id);
+    Request.findById(req.params.id).then((response) => {
+        console.log(response);
+        res.json({ order: response });
+    }).catch((error) => {
+        console.log('ERROR', error);
+    })
+});
 
 app.post('/request', async (req, res) => {
     // console.log('REQUEST REQ ==>>',  req)

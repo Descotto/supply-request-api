@@ -13,6 +13,12 @@ const requestSchema = new mongoose.Schema({
         type: Date,
         required: true
     },
+    pulled: {
+        type: Boolean,
+    },
+    pulledBy: {
+        type: String,
+    },
     items: {
         type: Array,
     
