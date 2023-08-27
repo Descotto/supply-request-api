@@ -32,14 +32,23 @@ app.get('/', (req, res) => {
 });
 
 app.get('/order/:id', (req, res) => {
-    console.log(req.params.id);
     Request.findById(req.params.id).then((response) => {
-        console.log(response);
+        
         res.json({ order: response });
     }).catch((error) => {
         console.log('ERROR', error);
     })
 });
+
+app.get('/byname/:name', (req, res) => {
+    Request.find({ name: req.params.name}).then((response) => {
+        res.json({ order: response });
+    }).catch((err) => {
+        console.log(err);
+    });
+});
+
+
 
 app.post('/request', async (req, res) => {
     // console.log('REQUEST REQ ==>>',  req)
