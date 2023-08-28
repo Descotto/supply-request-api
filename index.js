@@ -6,8 +6,6 @@ const mongoose = require('mongoose');
 const Request = require('./schemas/request');
 // port
 const port = process.env.PORT || 8000;
-console.log(process.env.MONGODB_URI)
-console.log(process.env.PORT)
 const mongoDB = process.env.MONGODB_URI
 mongoose.connect(mongoDB, {useNewUrlParser: true});
 
