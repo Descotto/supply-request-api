@@ -1,4 +1,4 @@
-// import { config } from 'dotenv';
+require('dotenv').config();
 const express = require('express');
 const app = express();
 const cors = require('cors');
@@ -6,8 +6,9 @@ const mongoose = require('mongoose');
 const Request = require('./schemas/request');
 // port
 const port = process.env.PORT || 8000;
-//
-const mongoDB = 'mongodb://127.0.0.1/Request' || process.env.MONGODB_URI
+console.log(process.env.MONGODB_URI)
+console.log(process.env.PORT)
+const mongoDB = process.env.MONGODB_URI
 mongoose.connect(mongoDB, {useNewUrlParser: true});
 
 const db = mongoose.connection;
