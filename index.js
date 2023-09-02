@@ -50,7 +50,7 @@ app.get('/byname/:name', (req, res) => {
 
 
 app.post('/request', async (req, res) => {
-    // console.log('REQUEST REQ ==>>',  req)
+    
     if (req) {
         console.log('REQUEST REQ ====>', req.body)
     }
@@ -61,7 +61,6 @@ app.post('/request', async (req, res) => {
         items: req.body.items
     })
     .then(order => {
-        // console.log('New request:  ', order);
         res.json({ message: 'message received', order: order.id});
     })
     .catch(err => {
@@ -69,6 +68,20 @@ app.post('/request', async (req, res) => {
         res.json({ message: 'Error ocurred, please try again'})
     });
 })
+
+
+// Delete all documents in the collection
+app.delete('/delete-all', async (req, res) => {
+    try {
+      await Request.deleteMany({});
+      res.json({ message: 'All documents deleted' });
+    } catch (error) {
+      console.error('Error:', error);
+      res.status(500).json({ error: 'An error occurred' });
+    }
+  });
+
+
 
 //================================================================
 
