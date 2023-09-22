@@ -7,12 +7,12 @@ const Request = require('./schemas/request');
 // port
 const port = process.env.PORT || 8000;
 const mongoDB = process.env.MONGODB_URI
-mongoose.connect(mongoDB, {useNewUrlParser: true});
+mongoose.connect(mongoDB, { useNewUrlParser: true });
 
 const db = mongoose.connection;
 
 app.use(cors());
-app.use(express.json({limit: '5mb'}));
+app.use(express.json({ limit: '5mb' }));
 
 db.once('open', () => {
     console.log('Connected to database at ', db.host, ':', db.port);
@@ -23,7 +23,7 @@ db.once('error', (error) => {
 });
 
 
-app.use(express.urlencoded({ extended: false}));
+app.use(express.urlencoded({ extended: false }));
 
 //================================================================
 app.get('/', (req, res) => {
@@ -626,9 +626,11 @@ app.get('/data', (req, res) => {
     });
 });
 
+
+
 app.get('/order/:id', (req, res) => {
     Request.findById(req.params.id).then((response) => {
-        
+
         res.json({ order: response });
     }).catch((error) => {
         console.log('ERROR', error);
@@ -636,17 +638,90 @@ app.get('/order/:id', (req, res) => {
 });
 
 app.get('/byname/:name', (req, res) => {
-    Request.find({ name: req.params.name}).then((response) => {
+    Request.find({ name: req.params.name }).then((response) => {
         res.json({ order: response });
     }).catch((err) => {
         console.log(err);
     });
 });
 
+//search by day
+app.get('/search/:date', async (req, res) => {
+    try {
+        
+        const searchDate = req.params.date;
+        const startOfDay = new Date(`${searchDate}T00:00:00.000Z`);
+        const endOfDay = new Date(`${searchDate}T23:59:59.999Z`);
+        const result = await Request.aggregate([
+            {
+                $match: {
+                    date: {
+                        $gte: startOfDay,
+                        $lte: endOfDay,
+                    },
+                },
+            },
+        ]);
+
+        res.json(result);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+//search by month
+app.get('/searchmonth/:year/:month', async (req, res) => {
+    try {
+        const year = parseInt(req.params.year);
+        const month = parseInt(req.params.month);
+        const startOfMonth = new Date(Date.UTC(year, month - 1, 1, 0, 0, 0));
+        const endOfMonth = new Date(Date.UTC(year, month, 0, 23, 59, 59, 999));
+
+        const result = await Request.aggregate([
+            {
+                $match: {
+                    date: {
+                        $gte: startOfMonth,
+                        $lte: endOfMonth,
+                    },
+                },
+            },
+        ]);
+
+        res.json(result);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+
+app.get('/searchyear/:year', async (req, res) => {
+    try {
+      const year = parseInt(req.params.year);
+      const startOfYear = new Date(Date.UTC(year, 0, 1, 0, 0, 0));
+      const endOfYear = new Date(Date.UTC(year, 11, 31, 23, 59, 59, 999));
+  
+      
+      const result = await Request.aggregate([
+        {
+          $match: {
+            date: {
+              $gte: startOfYear,
+              $lte: endOfYear,
+            },
+          },
+        },
+      ]);
+  
+      res.json(result);
+    } catch (err) {
+      res.status(500).json({ error: err.message });
+    }
+  });
 
 
 app.post('/request', async (req, res) => {
-    
+
     if (req) {
         console.log('REQUEST REQ ====>', req.body)
     }
@@ -656,26 +731,26 @@ app.post('/request', async (req, res) => {
         lead: req.body.lead,
         items: req.body.items
     })
-    .then(order => {
-        res.json({ message: 'message received', order: order.id});
-    })
-    .catch(err => {
-        console.log('Error: ', err);
-        res.json({ message: 'Error ocurred, please try again'})
-    });
+        .then(order => {
+            res.json({ message: 'message received', order: order.id });
+        })
+        .catch(err => {
+            console.log('Error: ', err);
+            res.json({ message: 'Error ocurred, please try again' })
+        });
 })
 
 
 // Delete all documents in the collection
 app.delete('/delete-all', async (req, res) => {
     try {
-      await Request.deleteMany({});
-      res.json({ message: 'All documents deleted' });
+        await Request.deleteMany({});
+        res.json({ message: 'All documents deleted' });
     } catch (error) {
-      console.error('Error:', error);
-      res.status(500).json({ error: 'An error occurred' });
+        console.error('Error:', error);
+        res.status(500).json({ error: 'An error occurred' });
     }
-  });
+});
 
 
 
