@@ -58,7 +58,7 @@ app.get('/data', (req, res) => {
             },
             {
                 "itemCode": "93174711",
-                "description": "Wood Screw (Termination Box Screw) 100/box"
+                "description": "Wood Screw (T Box Screw) 100/box"
             },
             {
                 "itemCode": "MAR1001411",
